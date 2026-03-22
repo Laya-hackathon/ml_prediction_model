@@ -24,16 +24,15 @@ print("Test users data loaded successfully.")
 # Ensure correct feature order
 new_data = test_users_df[feature_columns]
 
-# Take ONE input
-input_df = new_data.iloc[[0]]
-print(input_df.head())
-user_id = test_users_df["member_id"].iloc[0]
-claim_id = test_users_df["claim_id"].iloc[0]
+print(f"Running predictions for {len(test_users_df)} users...")
 
-print(input_df)
+for i, row in test_users_df.iterrows():
+    user_id = row["member_id"]
+    claim_id = row["claim_id"]
+    input_df = new_data.iloc[[i]]
 
-# Predict
-prediction, probability = model_predict(input_df, model)
+    prediction, probability = model_predict(input_df, model)
+    send_to_agent(prediction, probability, user_id, claim_id)
+    print(f"[{i+1}/{len(test_users_df)}] {user_id} | {claim_id} | pred={prediction} | prob={probability:.4f}")
 
-# Send result
-send_to_agent(prediction, probability, user_id, claim_id)
+print("Done.")
